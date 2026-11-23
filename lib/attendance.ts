@@ -64,7 +64,7 @@ export function calc(emp: Employee, iso: string, ctx: Ctx): DayCalc {
   const hari = has(e.hari) ? Number(e.hari) : autoHari;
 
   const batas = toMin(cfg.lemburBatas) ?? 1110;
-  const mulai = toMin(cfg.lemburMulai) ?? 1050;
+  const mulai = toMin(cfg.lemburMulai) ?? 1020;
   const saran = !off && !lembur && pulang !== null && pulang > batas ? pulang - mulai : 0;
 
   const missing = !off && masuk === null && pulang === null && !status && !note.trim();

@@ -18,7 +18,7 @@ import { loadCfg, loadEdits, loadNames, saveCfg, saveEdits, saveName } from '@/l
 import type { Config, Ctx, Edit, Employee, Period, Status } from '@/lib/types';
 import { btnLg, btnPrimaryLg, page } from '@/lib/ui';
 
-const DEFAULT_CFG: Config = { masuk: '08:00', tol: 10, lemburMulai: '17:30', lemburBatas: '18:30' };
+const DEFAULT_CFG: Config = { masuk: '08:00', tol: 10, lemburMulai: '17:00', lemburBatas: '18:30' };
 
 const BANNER_CLS = {
   info: 'border-line bg-accent-soft',
@@ -68,7 +68,7 @@ export default function AbsenApp() {
   useEffect(() => {
     const saved = loadCfg();
     if (saved) {
-      setCfg({ ...DEFAULT_CFG, ...saved.cfg });
+      setCfg({ ...DEFAULT_CFG, ...saved.cfg, tol: DEFAULT_CFG.tol });
       setHolidays(saved.holidays ?? []);
     }
     setReady(true);

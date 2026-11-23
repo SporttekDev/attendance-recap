@@ -35,7 +35,7 @@ const STEPS: [string, string][] = [
   ],
   [
     'Sesuaikan aturan bila perlu',
-    'Buka Aturan hitung dan tanggal merah untuk mengubah jam masuk, toleransi, jam lembur, dan mendaftarkan tanggal merah. Perubahan langsung menghitung ulang tabel.',
+    'Buka Aturan hitung dan tanggal merah untuk mengubah jam masuk, jam lembur, dan mendaftarkan tanggal merah. Toleransi telat dikunci di 10 menit. Perubahan langsung menghitung ulang tabel.',
   ],
   [
     'Unduh PDF',
@@ -54,7 +54,7 @@ const RULES: [string, string][] = [
   ],
   [
     'Menit lembur',
-    'Selalu diisi manual, tidak pernah otomatis, karena ada yang sengaja pulang lebih lambat tanpa lembur. Jika pulang melewati 18:30, tombol saran muncul. Contoh: pulang 18:54 disarankan 84 menit (18:54 dikurangi 17:30).',
+    'Selalu diisi manual, tidak pernah otomatis, karena ada yang sengaja pulang lebih lambat tanpa lembur. Jika pulang melewati 18:30, tombol saran muncul. Contoh: pulang 18:54 disarankan 114 menit (18:54 dikurangi 17:00).',
   ],
   [
     'Hari lembur',
@@ -194,9 +194,9 @@ export default function PanduanPage() {
             Angka abu-abu di kolom Telat atau Hari lembur: hitungan otomatis. Kalau Anda mengetik angka sendiri, angkanya
             menjadi hitam dan dipakai sebagai gantinya.
           </Legend>
-          <Legend mark={<span className={saran}>+84</span>}>
+          <Legend mark={<span className={saran}>+114</span>}>
             Tombol saran lembur. Muncul di kolom Lembur jika pulang melewati jam batas (awalnya 18:30). Satu klik mengisi
-            menit lembur dihitung dari 17:30.
+            menit lembur dihitung dari 17:00.
           </Legend>
           <Legend mark={<span className="text-lg" aria-hidden="true">↺</span>}>
             Kembalikan baris itu ke hitungan otomatis (jam, telat, lembur, dan hari lembur). Keterangan dan status tidak

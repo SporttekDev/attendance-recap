@@ -37,13 +37,12 @@ export default function RulesPanel({ cfg, onCfg, holidays, onHolidays }: Props) 
         <div className={field}>
           <label className={label} htmlFor="cTol">Toleransi (menit)</label>
           <input
-            className={input}
+            className={`${input} disabled:cursor-not-allowed disabled:bg-off disabled:text-muted`}
             id="cTol"
             type="number"
-            min={0}
-            step={1}
             value={cfg.tol}
-            onChange={(e) => onCfg({ ...cfg, tol: Math.max(0, Number(e.target.value) || 0) })}
+            disabled
+            readOnly
           />
         </div>
         <div className={field}>
