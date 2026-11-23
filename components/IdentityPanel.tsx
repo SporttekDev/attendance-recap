@@ -1,6 +1,7 @@
 'use client';
 
 import type { Employee, Period } from '@/lib/types';
+import { autoGrid, field, input, label, panel } from '@/lib/ui';
 
 interface Props {
   emps: Employee[];
@@ -17,25 +18,26 @@ interface Props {
 
 export default function IdentityPanel(p: Props) {
   return (
-    <section className="panel">
-      <div className="grid">
+    <section className={panel}>
+      <div className={autoGrid}>
         {p.emps.length > 1 && (
-          <div className="field">
-            <label htmlFor="empSel">Karyawan</label>
-            <select id="empSel" value={p.cur} onChange={(e) => p.onCur(Number(e.target.value))}>
+          <div className={field}>
+            <label className={label} htmlFor="empSel">Karyawan</label>
+            <select className={input} id="empSel" value={p.cur} onChange={(e) => p.onCur(Number(e.target.value))}>
               {p.emps.map((e, i) => (
                 <option key={e.key} value={i}>{e.name || e.key}</option>
               ))}
             </select>
           </div>
         )}
-        <div className="field">
-          <label htmlFor="fullName">Nama di PDF</label>
-          <input id="fullName" type="text" autoComplete="off" value={p.full} onChange={(e) => p.onFull(e.target.value)} />
+        <div className={field}>
+          <label className={label} htmlFor="fullName">Nama di PDF</label>
+          <input className={input} id="fullName" type="text" autoComplete="off" value={p.full} onChange={(e) => p.onFull(e.target.value)} />
         </div>
-        <div className="field">
-          <label htmlFor="bulan">Bulan di judul</label>
+        <div className={field}>
+          <label className={label} htmlFor="bulan">Bulan di judul</label>
           <input
+            className={input}
             id="bulan"
             type="text"
             autoComplete="off"
@@ -44,18 +46,20 @@ export default function IdentityPanel(p: Props) {
             onChange={(e) => p.onBulan(e.target.value.toUpperCase())}
           />
         </div>
-        <div className="field">
-          <label htmlFor="pStart">Periode mulai</label>
+        <div className={field}>
+          <label className={label} htmlFor="pStart">Periode mulai</label>
           <input
+            className={input}
             id="pStart"
             type="date"
             value={p.period.start}
             onChange={(e) => e.target.value && p.onPeriod({ ...p.period, start: e.target.value })}
           />
         </div>
-        <div className="field">
-          <label htmlFor="pEnd">Periode sampai</label>
+        <div className={field}>
+          <label className={label} htmlFor="pEnd">Periode sampai</label>
           <input
+            className={input}
             id="pEnd"
             type="date"
             value={p.period.end}

@@ -16,8 +16,17 @@ import { readExcelRows } from '@/lib/readExcel';
 import { createSample } from '@/lib/sample';
 import { loadCfg, loadEdits, loadNames, saveCfg, saveEdits, saveName } from '@/lib/storage';
 import type { Config, Ctx, Edit, Employee, Period, Status } from '@/lib/types';
+import { btnLg, btnPrimaryLg, page } from '@/lib/ui';
 
 const DEFAULT_CFG: Config = { masuk: '08:00', tol: 10, lemburMulai: '17:30', lemburBatas: '18:30' };
+
+const BANNER_CLS = {
+  info: 'border-line bg-accent-soft',
+  warn: 'border-transparent bg-warn-soft text-warn',
+  err: 'border-transparent bg-bad-soft text-bad',
+} as const;
+
+const HERO_STEPS = ['Unggah', 'Lengkapi', 'Unduh PDF'];
 
 interface BannerState {
   text: string;
@@ -162,25 +171,33 @@ export default function AbsenApp() {
   };
 
   return (
-    <div className="wrap" onDragOver={onDragOver} onDragLeave={() => setDragOver(false)} onDrop={onDrop}>
-      <section className="hero">
-        <div className="hero-text">
-          <span className="pill">Sistem rekap absensi</span>
-          <h1>Rekap absensi bulanan, tanpa hitung manual.</h1>
-          <p className="lead">
+    <div className={page} onDragOver={onDragOver} onDragLeave={() => setDragOver(false)} onDrop={onDrop}>
+      <section className="grid grid-cols-1 items-stretch gap-7 pt-6 pb-4 min-[861px]:grid-cols-2 min-[861px]:gap-12">
+        <div className="flex min-w-0 flex-col justify-center gap-[22px]">
+          <span className="self-start rounded-full border border-line px-3 py-[5px] text-xs font-medium tracking-[0.04em] text-muted uppercase">
+            Sistem rekap absensi
+          </span>
+          <h1 className="text-[clamp(34px,5.2vw,58px)] leading-[1.06] font-bold tracking-[-0.045em]">
+            Rekap absensi bulanan, tanpa hitung manual.
+          </h1>
+          <p className="max-w-[56ch] text-lg leading-[1.6] text-muted">
             Unggah Excel dari mesin sidik jari. Telat, lembur, izin, sakit, dan proyek dihitung lalu dirapikan menjadi PDF
             siap kirim.
           </p>
-          <div className="hero-actions">
-            <button type="button" className="btn primary lg" onClick={() => fileRef.current?.click()}>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className={btnPrimaryLg} onClick={() => fileRef.current?.click()}>
               Unggah file Excel <span aria-hidden="true">→</span>
             </button>
-            <Link className="btn lg" href="/panduan">
+            <Link className={btnLg} href="/panduan">
               Baca panduan
             </Link>
           </div>
         </div>
-        <label className={`hero-card${dragOver ? ' over' : ''}`}>
+        <label
+          className={`relative isolate flex min-h-[260px] cursor-pointer flex-col justify-center gap-3 overflow-hidden rounded-[20px] bg-primary p-7 text-white before:absolute before:inset-3.5 before:-z-10 before:rounded-xl before:border-[1.5px] before:border-dashed before:transition-colors before:content-[''] hover:before:border-white/75 hover:before:bg-white/5 focus-within:outline-2 focus-within:outline-offset-[3px] focus-within:outline-primary min-[861px]:min-h-[340px] min-[861px]:p-9 ${
+            dragOver ? 'before:border-white/75 before:bg-white/5' : 'before:border-white/30'
+          }`}
+        >
           <input
             ref={fileRef}
             className="sr-only"
@@ -191,23 +208,30 @@ export default function AbsenApp() {
               e.target.value = '';
             }}
           />
-          <span className="hc-title">Tarik file Excel ke sini</span>
-          <span className="hc-sub">atau klik untuk memilih file</span>
-          <span className="hc-tags">
-            <span>.xlsx</span>
-            <span>.xls</span>
-            <span>.csv</span>
+          <span className="text-[26px] leading-[1.15] font-bold tracking-[-0.03em]">Tarik file Excel ke sini</span>
+          <span className="text-white/70">atau klik untuk memilih file</span>
+          <span className="flex gap-1.5">
+            {['.xlsx', '.xls', '.csv'].map((ext) => (
+              <span key={ext} className="rounded-full border border-white/30 px-2.5 py-0.5 text-xs">
+                {ext}
+              </span>
+            ))}
           </span>
-          <ol className="hc-steps">
-            <li>Unggah</li>
-            <li>Lengkapi</li>
-            <li>Unduh PDF</li>
+          <ol className="mt-[18px] flex list-none flex-wrap gap-[18px] font-medium text-white/85">
+            {HERO_STEPS.map((step, i) => (
+              <li key={step} className="flex items-center gap-2">
+                <span className="inline-flex size-[22px] items-center justify-center rounded-full bg-white text-xs font-bold text-primary">
+                  {i + 1}
+                </span>
+                {step}
+              </li>
+            ))}
           </ol>
         </label>
       </section>
 
       {banner && (
-        <div className={`banner ${banner.kind === 'info' ? '' : banner.kind}`} role="status">
+        <div className={`rounded-[10px] border px-3.5 py-2.5 ${BANNER_CLS[banner.kind]}`} role="status">
           {banner.text}
         </div>
       )}
@@ -231,7 +255,7 @@ export default function AbsenApp() {
 
       <AttendanceTable rows={rows} cfg={cfg} flashIso={flashIso} onPatch={patch} onRemove={removeRow} />
 
-      <div className="bottom">
+      <div className="flex flex-wrap items-stretch justify-between gap-4">
         <AddRowPanel onAdd={addRow} />
         <DownloadPanel
           count={emps.length}
@@ -243,7 +267,10 @@ export default function AbsenApp() {
       </div>
 
       {toast && (
-        <div className="toast" role="status">
+        <div
+          className="fixed bottom-[calc(20px+env(safe-area-inset-bottom,0px))] left-1/2 z-20 max-w-[90vw] -translate-x-1/2 rounded-[10px] bg-primary px-[18px] py-2.5 text-[13px] font-medium text-white"
+          role="status"
+        >
           {toast}
         </div>
       )}

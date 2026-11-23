@@ -3,8 +3,13 @@
 import TimeInput from '@/components/TimeInput';
 import { DAYS, dowOf, fmt, idDate } from '@/lib/date';
 import { STATUSES, type Config, type DayRow, type Edit, type Status } from '@/lib/types';
+import { cellInput, saran } from '@/lib/ui';
 
 const OVERRIDE_FIELDS = ['masuk', 'pulang', 'telat', 'lembur', 'hari'] as const;
+
+const th = 'border-b border-line px-1.5 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-muted';
+const td = 'border-b border-line-soft px-1.5 py-1 align-middle';
+const actBtn = 'rounded-md px-1.5 py-0.5 text-base text-muted hover:bg-off hover:text-ink';
 
 interface Props {
   rows: DayRow[];
@@ -16,30 +21,41 @@ interface Props {
 
 export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove }: Props) {
   return (
-    <div className="tablewrap">
-      <table>
+    <div className="overflow-x-auto rounded-[14px] border border-line bg-white">
+      <table className="w-full min-w-[980px] border-collapse tabular-nums">
         <thead>
           <tr>
-            <th>No</th><th>Tanggal</th><th>Status</th><th>Jam masuk</th><th>Jam pulang</th>
-            <th>Telat (mnt)</th><th>Lembur (mnt)</th><th>Hari lembur</th><th>Keterangan</th><th />
+            <th className={th}>No</th><th className={th}>Tanggal</th><th className={th}>Status</th>
+            <th className={th}>Jam masuk</th><th className={th}>Jam pulang</th>
+            <th className={th}>Telat (mnt)</th><th className={th}>Lembur (mnt)</th><th className={th}>Hari lembur</th>
+            <th className={th}>Keterangan</th><th className={th} />
           </tr>
         </thead>
-        <tbody>
+        <tbody className="[&>tr:last-child>td]:border-b-0">
           {rows.map(({ iso, c }, n) => {
             const e = c.edit;
             const d = idDate(iso);
             const id = (f: string) => `f-${iso}-${f}`;
             const hasOverride = OVERRIDE_FIELDS.some((f) => e[f] !== undefined);
-            const cls = [c.off ? 'off' : '', c.missing ? 'miss' : '', flashIso === iso ? 'flash' : ''].join(' ').trim();
+            const rowCls = [
+              c.off ? '[&>td]:bg-off' : '',
+              c.missing ? '[&>td]:bg-bad-soft' : '',
+              flashIso === iso ? '[&>td]:outline-2 [&>td]:-outline-offset-2 [&>td]:outline-primary' : '',
+            ]
+              .join(' ')
+              .trim();
             return (
-              <tr key={iso} id={`row-${iso}`} className={cls}>
-                <td className="no">{n + 1}</td>
-                <td className="tgl">
-                  <span className="dt">{d}</span>
-                  <span className="dow">{DAYS[dowOf(iso)]}{c.holiday ? ' merah' : ''}</span>
+              <tr key={iso} id={`row-${iso}`} className={rowCls}>
+                <td className={`${td} w-9 text-center text-muted`}>{n + 1}</td>
+                <td className={`${td} w-[120px] whitespace-nowrap`}>
+                  <span className="font-medium">{d}</span>
+                  <span className={`ml-1.5 text-xs ${c.off ? 'font-medium text-warn' : 'text-muted'}`}>
+                    {DAYS[dowOf(iso)]}{c.holiday ? ' merah' : ''}
+                  </span>
                 </td>
-                <td className="st">
+                <td className={`${td} w-[118px]`}>
                   <select
+                    className={`${cellInput} w-full`}
                     id={id('status')}
                     aria-label={`Status ${d}`}
                     value={c.status}
@@ -49,8 +65,9 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </td>
-                <td className="tm">
+                <td className={`${td} w-[100px]`}>
                   <TimeInput
+                    className={`${cellInput} w-full`}
                     id={id('masuk')}
                     aria-label={`Jam masuk ${d}`}
                     value={c.masuk !== null ? fmt(c.masuk) : ''}
@@ -58,8 +75,9 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     onChange={(v) => onPatch(iso, { masuk: v === '' ? '-' : v })}
                   />
                 </td>
-                <td className="tm">
+                <td className={`${td} w-[100px]`}>
                   <TimeInput
+                    className={`${cellInput} w-full`}
                     id={id('pulang')}
                     aria-label={`Jam pulang ${d}`}
                     value={c.pulang !== null ? fmt(c.pulang) : ''}
@@ -67,8 +85,9 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     onChange={(v) => onPatch(iso, { pulang: v === '' ? '-' : v })}
                   />
                 </td>
-                <td className="nm">
+                <td className={`${td} w-[84px]`}>
                   <input
+                    className={`${cellInput} w-full`}
                     id={id('telat')}
                     type="number"
                     min={0}
@@ -79,14 +98,14 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     onChange={(ev) => onPatch(iso, { telat: ev.target.value === '' ? undefined : Number(ev.target.value) })}
                   />
                 </td>
-                <td className="lm">
-                  <div className="cell">
+                <td className={`${td} w-[156px] whitespace-nowrap`}>
+                  <div className="flex items-center gap-1">
                     <input
+                      className={`${cellInput} w-[76px]`}
                       id={id('lembur')}
                       type="number"
                       min={0}
                       step={1}
-                      style={{ width: 76 }}
                       aria-label={`Menit lembur ${d}`}
                       value={e.lembur ?? ''}
                       onChange={(ev) => onPatch(iso, { lembur: ev.target.value === '' ? undefined : Number(ev.target.value) })}
@@ -94,7 +113,7 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     {c.saran > 0 && c.pulang !== null && (
                       <button
                         type="button"
-                        className="saran"
+                        className={saran}
                         title={`Pulang ${fmt(c.pulang)}. Pakai ${c.saran} menit lembur (dari ${cfg.lemburMulai})`}
                         onClick={() => onPatch(iso, { lembur: c.saran })}
                       >
@@ -103,8 +122,9 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     )}
                   </div>
                 </td>
-                <td className="nm">
+                <td className={`${td} w-[84px]`}>
                   <input
+                    className={`${cellInput} w-full`}
                     id={id('hari')}
                     type="number"
                     min={0}
@@ -115,8 +135,9 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     onChange={(ev) => onPatch(iso, { hari: ev.target.value === '' ? undefined : Number(ev.target.value) })}
                   />
                 </td>
-                <td>
+                <td className={td}>
                   <input
+                    className={`${cellInput} w-full`}
                     id={id('note')}
                     type="text"
                     autoComplete="off"
@@ -126,10 +147,11 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     onChange={(ev) => onPatch(iso, { note: ev.target.value })}
                   />
                 </td>
-                <td className="act">
+                <td className={`${td} w-[58px] text-right whitespace-nowrap`}>
                   {hasOverride && (
                     <button
                       type="button"
+                      className={actBtn}
                       title="Kembalikan jam dan angka ke hitungan otomatis"
                       aria-label={`Reset baris ${d}`}
                       onClick={() =>
@@ -140,7 +162,13 @@ export default function AttendanceTable({ rows, cfg, flashIso, onPatch, onRemove
                     </button>
                   )}
                   {e.manual && (
-                    <button type="button" title="Hapus baris manual" aria-label={`Hapus baris ${d}`} onClick={() => onRemove(iso)}>
+                    <button
+                      type="button"
+                      className={actBtn}
+                      title="Hapus baris manual"
+                      aria-label={`Hapus baris ${d}`}
+                      onClick={() => onRemove(iso)}
+                    >
                       &times;
                     </button>
                   )}
