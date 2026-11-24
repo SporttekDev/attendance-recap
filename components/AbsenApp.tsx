@@ -12,6 +12,7 @@ import { applyPatch, buildRows, bulanText, summarize } from '@/lib/attendance';
 import { idDate, titleCase } from '@/lib/date';
 import { buildEmployees, periodOf } from '@/lib/parse';
 import { downloadPdf } from '@/lib/pdf';
+import { downloadXlsx } from '@/lib/xlsx';
 import { readExcelRows } from '@/lib/readExcel';
 import { createSample } from '@/lib/sample';
 import { loadCfg, loadEdits, loadNames, saveCfg, saveEdits, saveName } from '@/lib/storage';
@@ -148,13 +149,15 @@ export default function AbsenApp() {
     }
   }
 
-  async function download(list: Employee[], filename: string) {
+  async function download(kind: 'pdf' | 'xlsx', list: Employee[], name: string) {
     setBusy(true);
+    const label = kind === 'pdf' ? 'PDF' : 'Excel';
     try {
-      await downloadPdf(list, ctx, bulan, filename);
-      showToast('PDF diunduh.');
+      if (kind === 'pdf') await downloadPdf(list, ctx, bulan, `${name}.pdf`);
+      else await downloadXlsx(list, ctx, bulan, `${name}.xlsx`);
+      showToast(`${label} diunduh.`);
     } catch (err) {
-      showToast(`Gagal membuat PDF: ${err instanceof Error ? err.message : String(err)}`);
+      showToast(`Gagal membuat ${label}: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
     }
@@ -194,9 +197,8 @@ export default function AbsenApp() {
           </div>
         </div>
         <label
-          className={`relative isolate flex min-h-[260px] cursor-pointer flex-col justify-center gap-3 overflow-hidden rounded-[20px] bg-primary p-7 text-white before:absolute before:inset-3.5 before:-z-10 before:rounded-xl before:border-[1.5px] before:border-dashed before:transition-colors before:content-[''] hover:before:border-white/75 hover:before:bg-white/5 focus-within:outline-2 focus-within:outline-offset-[3px] focus-within:outline-primary min-[861px]:min-h-[340px] min-[861px]:p-9 ${
-            dragOver ? 'before:border-white/75 before:bg-white/5' : 'before:border-white/30'
-          }`}
+          className={`relative isolate flex min-h-[260px] cursor-pointer flex-col justify-center gap-3 overflow-hidden rounded-[20px] bg-primary p-7 text-white before:absolute before:inset-3.5 before:-z-10 before:rounded-xl before:border-[1.5px] before:border-dashed before:transition-colors before:content-[''] hover:before:border-white/75 hover:before:bg-white/5 focus-within:outline-2 focus-within:outline-offset-[3px] focus-within:outline-primary min-[861px]:min-h-[340px] min-[861px]:p-9 ${dragOver ? 'before:border-white/75 before:bg-white/5' : 'before:border-white/30'
+            }`}
         >
           <input
             ref={fileRef}
@@ -261,8 +263,10 @@ export default function AbsenApp() {
           count={emps.length}
           missing={totals.missing}
           busy={busy}
-          onOne={() => void download([emp], `${titleCase(emp.full)} - ${titleCase(bulanLabel)}.pdf`)}
-          onAll={() => void download(emps, `Absen - ${titleCase(bulanLabel)}.pdf`)}
+          onPdf={() => void download('pdf', [emp], `${titleCase(emp.full)} - ${titleCase(bulanLabel)}`)}
+          onPdfAll={() => void download('pdf', emps, `Absen - ${titleCase(bulanLabel)}`)}
+          onExcel={() => void download('xlsx', [emp], `${titleCase(emp.full)} - ${titleCase(bulanLabel)}`)}
+          onExcelAll={() => void download('xlsx', emps, `Absen - ${titleCase(bulanLabel)}`)}
         />
       </div>
 

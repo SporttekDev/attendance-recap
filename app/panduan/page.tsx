@@ -38,8 +38,8 @@ const STEPS: [string, string][] = [
     'Buka Aturan hitung dan tanggal merah untuk mengubah jam masuk, jam lembur, dan mendaftarkan tanggal merah. Toleransi telat dikunci di 10 menit. Perubahan langsung menghitung ulang tabel.',
   ],
   [
-    'Unduh PDF',
-    'Pastikan kartu merah Hari kerja belum ada keterangan sudah hilang, lalu klik Unduh PDF. Jika file Excel berisi beberapa karyawan, pilih karyawan di bagian atas, atau unduh semuanya dalam satu PDF.',
+    'Unduh PDF atau Excel',
+    'Pastikan kartu merah Hari kerja belum ada keterangan sudah hilang, lalu klik Unduh PDF. Butuh versi yang bisa diedit? Klik Unduh Excel untuk mendapat tabel yang sama. Jika file Excel berisi beberapa karyawan, pilih karyawan di bagian atas, atau unduh semuanya dalam satu file (di Excel, satu sheet per orang).',
   ],
 ];
 
@@ -83,6 +83,10 @@ const FAQ: [string, string][] = [
   [
     'Bagaimana cara mengetik jam?',
     'Jam memakai format 24 jam. Ketik 0830, 8:30, atau 08.30, semuanya menjadi 08:30. Jam sore ditulis 17:30, bukan 5:30 PM. Ketikan yang bukan jam, misalnya 25:00, ditandai merah dan tidak disimpan. Tekan Enter atau pindah kolom untuk menyimpan.',
+  ],
+  [
+    'Apa isi file Excel yang diunduh?',
+    'Tabel yang sama dengan PDF: judul bulan dan nama, kolom No sampai Keterangan, dan baris TOTAL di bawahnya. Angka nol dikosongkan seperti di PDF. Isinya angka biasa, bukan rumus, jadi total tidak berubah kalau Anda mengedit angka di Excel.',
   ],
   [
     'Kenapa jam pulang di suatu hari kosong?',
